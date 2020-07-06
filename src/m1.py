@@ -4,8 +4,9 @@ A problem in which to practice:
   -- using SEQUENCES
 
 Authors: Valerie Galluzzi, David Mutchler, Dave Fisher, Amanda Stouder,
-         their colleagues and PUT_YOUR_NAME_HERE.
-"""  # TODO: 1. PUT YOUR NAME IN THE ABOVE LINE.
+         their colleagues and Elliot Boutell.
+"""  # Done: 1. PUT YOUR NAME IN THE ABOVE LINE.
+from math import sqrt
 
 import rosegraphics as rg
 import random
@@ -26,20 +27,20 @@ def main():
     That is, a  TEST   function will not be called
     until you begin work on the code that it is testing.
     """
-    if m1_tests.is_implemented('__init__', 20):
-        run_test_init()
-    if m1_tests.is_implemented('get_distance_from'):
-        run_test_get_distance_from()
-    if m1_tests.is_implemented('swell_or_shrink_once'):
-        run_test_swell_or_shrink_once()
-    if m1_tests.is_implemented('swell_or_shrink_repeatedly', 4):
-        run_test_swell_or_shrink_repeatedly()
-    if m1_tests.is_implemented('swallow'):
-        run_test_swallow()
-    if m1_tests.is_implemented('change_color'):
-        run_test_change_color()
-    if m1_tests.is_implemented('change_to_original_color'):
-        run_test_change_to_original_color()
+    # if m1_tests.is_implemented('__init__', 2):
+    #     run_test_init()
+    # if m1_tests.is_implemented('get_distance_from'):
+    #     run_test_get_distance_from()
+    # if m1_tests.is_implemented('swell_or_shrink_once'):
+    #     run_test_swell_or_shrink_once()
+    # if m1_tests.is_implemented('swell_or_shrink_repeatedly', 4):
+    #     run_test_swell_or_shrink_repeatedly()
+    # if m1_tests.is_implemented('swallow'):
+    #     run_test_swallow()
+    # if m1_tests.is_implemented('change_color'):
+    #     run_test_change_color()
+    # if m1_tests.is_implemented('change_to_original_color'):
+    #     run_test_change_to_original_color()
     if m1_tests.is_implemented('change_to_next_color_in_tuple'):
         run_test_change_to_next_color_in_tuple()
 
@@ -83,6 +84,11 @@ class CircleChanger(object):
             :type fill_color: str
             :type colors: sequence of str
         """
+        self.colors = colors
+        self.circle = rg.Circle(rg.Point(x, y), radius)
+        self.circle.fill_color = fill_color
+        self.static_fill_color = fill_color
+        self.times_called = 0
         self.animation_factor = 1  # Smaller => faster animations
         self.seconds_to_sleep = 0.5  # Default for each call to draw
         # --------------------------------------------------------------
@@ -92,7 +98,7 @@ class CircleChanger(object):
         # --------------------------------------------------------------
 
         ################################################################
-        # TODO: 2.
+        # Done: 2.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the   run_test_init   function (below).
         #   Third, implement and test this method.
@@ -191,8 +197,12 @@ class CircleChanger(object):
         Type hints:
             :type point: rg.Point
         """
+        leg1 = (self.circle.center.x - point.x) ** 2
+        leg2 = (self.circle.center.y - point.y) ** 2
+        distance = sqrt(leg1 + leg2)
+        return distance
         ################################################################
-        # TODO: 3.
+        # Done: 3.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the   run_test_get_distance_from   function
         #   (below).  Third, implement and test this method.
@@ -236,8 +246,15 @@ class CircleChanger(object):
         Type hints:
             :type amount_to_swell_or_shrink: int
         """
+        if self.circle.radius + amount_to_swell_or_shrink < 1:
+            self.circle.radius = 1
+        else:
+            self.circle.radius = self.circle.radius + amount_to_swell_or_shrink
+        self.circle.outline_thickness = random.randrange(3, 16)
+        self.circle.fill_color = random.choice(self.colors)
+
         ################################################################
-        # TODO: 4.
+        # Done: 4.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the   run_test_swell_or_shrink_once   function
         #   (below).  Third, implement and test this method.
@@ -318,8 +335,13 @@ class CircleChanger(object):
             :type amount_to_swell_or_shrink: int
             :type times_to_swell_or_shrink:  int
         """
+        for k in range(times_to_swell_or_shrink):
+            self.swell_or_shrink_once(amount_to_swell_or_shrink)
+            self.draw()
+            self.swell_or_shrink_once(-1 * amount_to_swell_or_shrink)
+            self.draw()
         ################################################################
-        # TODO: 5.
+        # Done: 5.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the  run_test_swell_or_shrink_repeatedly  function
         #   (below).  Third, implement and test this method.
@@ -350,8 +372,15 @@ class CircleChanger(object):
             :type other_circle_changer: CircleChanger
             :rtype CircleChanger
         """
+        new_x = (self.circle.center.x + other_circle_changer.circle.center.x) / 2
+        new_y = (self.circle.center.y + other_circle_changer.circle.center.y) / 2
+        new_center = rg.Point(new_x, new_y)
+        new_radius = (self.circle.center.x - other_circle_changer.circle.center.x) / 2
+        new_circle_changer_colors = self.colors + other_circle_changer.colors
+        new_circle_changer = CircleChanger(new_x, new_y, new_radius, 'red', new_circle_changer_colors)
+        return new_circle_changer
         ################################################################
-        # TODO: 6.
+        # Done: 6.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the   run_test_swallow   function (below).
         #   Third, implement and test this method.
@@ -368,8 +397,7 @@ class CircleChanger(object):
           -- self
           -- An nonnegative integer that is less than the length
                of this CircleChanger's tuple of colors.
-        What goes out: Nothing (i.e., None).
-        Side effects:
+        What goes out: Nothing (i.e., None).+
           -- The fill_color of this CircleChanger's circle becomes
                the color in this CircleChanger's tuple of colors
                whose index is the given index_of_color.
@@ -381,8 +409,9 @@ class CircleChanger(object):
         Type hints:
             :type index_of_color: int
         """
+        self.circle.fill_color = self.colors[index_of_color]
         ################################################################
-        # TODO: 7.
+        # Done: 7.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the   run_test_change_color   function (below).
         #   Third, implement and test this method.
@@ -398,8 +427,10 @@ class CircleChanger(object):
                the same color that it was when this CircleChanger
                was constructed.
         """
+        self.circle.fill_color = self.static_fill_color
+
         ################################################################
-        # TODO: 8.
+        # Done: 8.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the   run_test_change_to_original_color   function
         #   (below).  Third, implement and test this method.
@@ -437,8 +468,11 @@ class CircleChanger(object):
         Note: Other methods that affect this CircleChanger's circle's
         fill color have no effect on or interaction with this method.
         """
+
+        self.circle.fill_color = self.colors[self.times_called % len(self.colors)]
+        self.times_called = self.times_called + 1
         ################################################################
-        # TODO: 9.
+        # Done: 9.
         #   First, READ the doc-string (specification) above.
         #   Second, READ the   run_test_change_to_next_color_in_tuple
         #   function (below).  Third, implement and test this method.
